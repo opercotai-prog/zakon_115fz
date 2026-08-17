@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Чек-лист по статье 6.1 115-ФЗ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f6f8fa;
+            color: #1a1a2e;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, #0f3460, #1a1a2e);
+            color: white;
+            padding: 28px 32px;
+            border-radius: 16px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.85;
+            margin-top: 6px;
+        }
+
+        .header .meta {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .header .meta span {
+            background: rgba(255,255,255,0.12);
+            padding: 4px 14px;
+            border-radius: 20px;
+        }
+
+        /* ===== PROGRESS ===== */
+        .progress-bar-wrap {
+            background: white;
+            border-radius: 12px;
+            padding: 18px 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .progress-bar-wrap .stats {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            font-size: 14px;
+        }
+
+        .progress-bar-wrap .stats .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .stat-dot.ok { background: #22c55e; }
+        .stat-dot.warn { background: #eab308; }
+        .stat-dot.fail { background: #ef4444; }
+        .stat-dot.unknown { background: #94a3b8; }
+
+        .progress-track {
+            flex: 1;
+            min-width: 140px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-track .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* ===== GROUP ===== */
+        .group {
+            background: white;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+            border: 1px solid #e9edf2;
+        }
+
+        .group-header {
+            padding: 18px 24px;
+            background: #fafbfc;
+            border-bottom: 1px solid #e9edf2;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.15s;
+        }
+
+        .group-header:hover {
+            background: #f1f4f8;
+        }
+
+        .group-header .group-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f3460;
+        }
+
+        .group-header .group-meta {
+            font-size: 14px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .group-header .group-meta .badge {
+            background: #e2e8f0;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .group-body {
+            padding: 8px 24px 24px;
+        }
+
+        .group-body.collapsed {
+            display: none;
+        }
+
+        /* ===== CHECK ===== */
+        .check-item {
+            padding: 16px 0;
+            border-bottom: 1px solid #f1f4f8;
+        }
+        .check-item:last-child {
+            border-bottom: none;
+        }
+
+        .check-question {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .check-question .id {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 13px;
+            white-space: nowrap;
+            min-width: 70px;
+            padding-top: 1px;
+        }
+
+        .check-norm {
+            font-size: 13px;
+            color: #64748b;
+            background: #f8fafc;
+            padding: 6px 12px;
+            border-radius: 6px;
+            margin: 6px 0 10px 82px;
+            border-left: 3px solid #94a3b8;
+            line-height: 1.5;
+        }
+
+        .check-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 14px;
+            margin-left: 82px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-group button {
+            padding: 5px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            background: white;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: #334155;
+        }
+
+        .btn-group button:hover {
+            border-color: #94a3b8;
+            background: #f8fafc;
+        }
+
+        .btn-group button.active-yes {
+            border-color: #22c55e;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .btn-group button.active-no {
+            border-color: #ef4444;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-group button.active-partial {
+            border-color: #eab308;
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .btn-group button.active-unknown {
+            border-color: #94a3b8;
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .recommendation {
+            margin-top: 8px;
+            margin-left: 82px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fef3c7;
+            border-left: 4px solid #eab308;
+            color: #78350f;
+            display: none;
+        }
+
+        .recommendation.show {
+            display: block;
+        }
+
+        .recommendation.warn {
+            background: #fee2e2;
+            border-left-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .recommendation.info {
+            background: #dbeafe;
+            border-left-color: #3b82f6;
+            color: #1e40af;
+        }
+
+        .recommendation.success {
+            background: #dcfce7;
+            border-left-color: #22c55e;
+            color: #166534;
+        }
+
+        /* ===== STATUS BADGE ===== */
+        .status-badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 12px;
+            margin-left: 6px;
+        }
+        .status-badge.ok { background: #dcfce7; color: #166534; }
+        .status-badge.warn { background: #fef9c3; color: #854d0e; }
+        .status-badge.fail { background: #fee2e2; color: #991b1b; }
+        .status-badge.unknown { background: #f1f5f9; color: #475569; }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 20px 0 28px;
+        }
+
+        .toolbar button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #1a1a2e;
+        }
+
+        .toolbar button:hover {
+            background: #f1f4f8;
+            border-color: #94a3b8;
+        }
+
+        .toolbar button.primary {
+            background: #0f3460;
+            color: white;
+            border-color: #0f3460;
+        }
+
+        .toolbar button.primary:hover {
+            background: #1a4a7a;
+        }
+
+        .toolbar button.danger {
+            color: #ef4444;
+            border-color: #fca5a5;
+        }
+
+        .toolbar button.danger:hover {
+            background: #fee2e2;
+        }
+
+        /* ===== EXPORT ===== */
+        .export-area {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-family: "Courier New", monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 360px;
+            overflow: auto;
+            display: none;
+            margin-top: 12px;
+        }
+
+        .export-area.show {
+            display: block;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            body {
+                padding: 12px;
+            }
+            .header {
+                padding: 20px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .check-question {
+                flex-wrap: wrap;
+            }
+            .check-question .id {
+                min-width: auto;
+            }
+            .check-norm,
+            .check-actions,
+            .recommendation {
+                margin-left: 0;
+            }
+            .check-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn-group {
+                flex-wrap: wrap;
+            }
+            .progress-bar-wrap {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .group-body {
+                padding: 8px 16px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <!-- Header -->
+    <div class="header">
+        <h1>📋 Чек-лист по статье 6.1 115-ФЗ</h1>
+        <div class="subtitle">Обязанности юридического лица по раскрытию информации о своих бенефициарных владельцах</div>
+        <div class="meta">
+            <span>📄 Статья 6.1</span>
+            <span>📅 Версия 1.0</span>
+            <span id="totalQuestions">⏳ Загрузка...</span>
+        </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-bar-wrap" id="progressWrap">
+        <div class="stats">
+            <span class="stat-item"><span class="stat-dot ok"></span> OK: <strong id="statOk">0</strong></span>
+            <span class="stat-item"><span class="stat-dot warn"></span> WARN: <strong id="statWarn">0</strong></span>
+            <span class="stat-item"><span class="stat-dot fail"></span> FAIL: <strong id="statFail">0</strong></span>
+            <span class="stat-item"><span class="stat-dot unknown"></span> Н/Д: <strong id="statUnknown">0</strong></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:100px;">
+            <span style="font-size:14px; color:#475569;" id="progressPercent">0%</span>
+            <div class="progress-track"><div class="fill" id="progressFill"></div></div>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <button class="primary" onclick="exportResults()">📤 Экспорт результатов (JSON)</button>
+        <button onclick="resetAll()" class="danger">🔄 Сбросить все ответы</button>
+        <button onclick="toggleAllGroups()">📂 Свернуть / Развернуть все</button>
+    </div>
+
+    <!-- Export area -->
+    <div class="export-area" id="exportArea"></div>
+
+    <!-- Groups -->
+    <div id="groupsContainer"></div>
+</div>
+
+<script>
+    // ============================================================
+    // 1. DATA
+    // ============================================================
+    let checklistData = null;
+    let answers = {};
+
+    // ============================================================
+    // 2. LOAD JSON
+    // ============================================================
+    async function loadChecklist() {
+        try {
+            // Если файл лежит рядом — замени путь на свой
+            const resp = await fetch('article_6.1_checklist_v1.0.json');
+            if (!resp.ok) throw new Error('Не удалось загрузить JSON');
+            checklistData = await resp.json();
+            initFromData();
+        } catch (e) {
+            document.getElementById('groupsContainer').innerHTML = `
+                <div style="background:#fee2e2;padding:20px;border-radius:10px;color:#991b1b;">
+                    ❌ Ошибка загрузки: ${e.message}<br>
+                    Убедитесь, что файл <code>article_6.1_checklist_v1.0.json</code> лежит рядом с этой страницей.
+                </div>
+            `;
+            console.error(e);
+        }
+    }
+
+    // ============================================================
+    // 3. INIT
+    // ============================================================
+    function initFromData() {
+        // Считаем общее количество вопросов
+        let total = 0;
+        for (const g of checklistData.groups) {
+            total += g.checks.length;
+        }
+        document.getElementById('totalQuestions').textContent = `📊 Всего вопросов: ${total}`;
+
+        // Загружаем сохранённые ответы из localStorage
+        const saved = localStorage.getItem('checklist_answers_6.1');
+        if (saved) {
+            try {
+                answers = JSON.parse(saved);
+            } catch (e) {}
+        }
+
+        renderGroups();
+        updateProgress();
+    }
+
+    // ============================================================
+    // 4. RENDER
+    // ============================================================
+    function renderGroups() {
+        const container = document.getElementById('groupsContainer');
+        let html = '';
+
+        for (const group of checklistData.groups) {
+            const groupId = group.id;
+            const allChecks = group.checks;
+            const answered = allChecks.filter(c => answers[c.id] && answers[c.id] !== 'UNKNOWN').length;
+            const total = allChecks.length;
+            const pct = total > 0 ? Math.round((answered / total) * 100) : 0;
+
+            html += `
+                <div class="group" data-group="${groupId}">
+                    <div class="group-header" onclick="toggleGroup('${groupId}')">
+                        <span class="group-title">${group.name}</span>
+                        <span class="group-meta">
+                            <span class="badge">${answered}/${total} (${pct}%)</span>
+                            <span style="font-size:18px;">▾</span>
+                        </span>
+                    </div>
+                    <div class="group-body" id="groupBody_${groupId}">
+            `;
+
+            for (const check of allChecks) {
+                const val = answers[check.id] || 'UNKNOWN';
+                const hasRecommendation = check.recommendation_if_no || check.recommendation_if_partial;
+
+                let recText = '';
+                let recClass = 'info';
+                if (val === 'NO' && check.recommendation_if_no) {
+                    recText = check.recommendation_if_no;
+                    recClass = 'warn';
+                } else if (val === 'PARTIAL' && check.recommendation_if_partial) {
+                    recText = check.recommendation_if_partial;
+                    recClass = 'warn';
+                } else if (val === 'YES') {
+                    recText = '✅ Всё в порядке.';
+                    recClass = 'success';
+                }
+
+                const statusLabel = {
+                    'YES': 'OK',
+                    'NO': 'FAIL',
+                    'PARTIAL': 'WARN',
+                    'UNKNOWN': 'Н/Д'
+                }[val] || 'Н/Д';
+
+                const statusClass = {
+                    'YES': 'ok',
+                    'NO': 'fail',
+                    'PARTIAL': 'warn',
+                    'UNKNOWN': 'unknown'
+                }[val] || 'unknown';
+
+                html += `
+                    <div class="check-item" data-id="${check.id}">
+                        <div class="check-question">
+                            <span class="id">${check.id}</span>
+                            <span>
+                                ${check.question}
+                                <span class="status-badge ${statusClass}">${statusLabel}</span>
+                            </span>
+                        </div>
+                        ${check.norm_text ? `
+                            <div class="check-norm">
+                                <strong>📌 ${check.point}:</strong> ${check.norm_text}
+                            </div>
+                        ` : ''}
+                        <div class="check-actions">
+                            <div class="btn-group">
+                                <button data-id="${check.id}" data-val="YES" class="${val === 'YES' ? 'active-yes' : ''}" onclick="setAnswer('${check.id}','YES')">✅ Да</button>
+                                <button data-id="${check.id}" data-val="NO" class="${val === 'NO' ? 'active-no' : ''}" onclick="setAnswer('${check.id}','NO')">❌ Нет</button>
+                                <button data-id="${check.id}" data-val="PARTIAL" class="${val === 'PARTIAL' ? 'active-partial' : ''}" onclick="setAnswer('${check.id}','PARTIAL')">⚠️ Частично</button>
+                                <button data-id="${check.id}" data-val="UNKNOWN" class="${val === 'UNKNOWN' ? 'active-unknown' : ''}" onclick="setAnswer('${check.id}','UNKNOWN')">❓ Н/Д</button>
+                            </div>
+                            ${hasRecommendation ? `
+                                <div class="recommendation ${recText ? 'show' : ''} ${recClass}" id="rec_${check.id}">
+                                    ${recText || 'Выберите ответ для рекомендации.'}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
+    }
+
+    // ============================================================
+    // 5. INTERACTIONS
+    // ============================================================
+    function setAnswer(id, val) {
+        answers[id] = val;
+        saveState();
+        // Перерисовываем только этот чек-пункт (быстрее)
+        renderSingleCheck(id);
+        updateProgress();
+    }
+
+    function renderSingleCheck(id) {
+        const item = document.querySelector(`.check-item[data-id="${id}"]`);
+        if (!item) return;
+        const val = answers[id] || 'UNKNOWN';
+
+        // Обновляем кнопки
+        const btns = item.querySelectorAll('.btn-group button');
+        btns.forEach(b => {
+            const bVal = b.getAttribute('data-val');
+            b.className = '';
+            if (bVal === val) {
+                if (val === 'YES') b.classList.add('active-yes');
+                else if (val === 'NO') b.classList.add('active-no');
+                else if (val === 'PARTIAL') b.classList.add('active-partial');
+                else if (val === 'UNKNOWN') b.classList.add('active-unknown');
+            }
+        });
+
+        // Обновляем статус-бейдж
+        const badge = item.querySelector('.status-badge');
+        if (badge) {
+            const labels = { 'YES':'OK','NO':'FAIL','PARTIAL':'WARN','UNKNOWN':'Н/Д' };
+            const classes = { 'YES':'ok','NO':'fail','PARTIAL':'warn','UNKNOWN':'unknown' };
+            badge.textContent = labels[val] || 'Н/Д';
+            badge.className = `status-badge ${classes[val] || 'unknown'}`;
+        }
+
+        // Обновляем рекомендацию
+        const rec = document.getElementById(`rec_${id}`);
+        if (rec) {
+            // Находим check из данных
+            let check = null;
+            for (const g of checklistData.groups) {
+                const found = g.checks.find(c => c.id === id);
+                if (found) { check = found; break; }
+            }
+            if (check) {
+                let text = '';
+                let cls = 'info';
+                if (val === 'NO' && check.recommendation_if_no) {
+                    text = check.recommendation_if_no;
+                    cls = 'warn';
+                } else if (val === 'PARTIAL' && check.recommendation_if_partial) {
+                    text = check.recommendation_if_partial;
+                    cls = 'warn';
+                } else if (val === 'YES') {
+                    text = '✅ Всё в порядке.';
+                    cls = 'success';
+                }
+                rec.textContent = text || 'Выберите ответ для рекомендации.';
+                rec.className = `recommendation ${text ? 'show' : ''} ${cls}`;
+            }
+        }
+
+        // Обновляем прогресс группы
+        updateGroupProgress();
+    }
+
+    function toggleGroup(id) {
+        const body = document.getElementById(`groupBody_${id}`);
+        if (body) {
+            body.classList.toggle('collapsed');
+        }
+    }
+
+    function toggleAllGroups() {
+        const all = document.querySelectorAll('.group-body');
+        const anyCollapsed = Array.from(all).some(el => el.classList.contains('collapsed'));
+        all.forEach(el => {
+            if (anyCollapsed) el.classList.remove('collapsed');
+            else el.classList.add('collapsed');
+        });
+    }
+
+    // ============================================================
+    // 6. PROGRESS
+    // ============================================================
+    function updateProgress() {
+        let total = 0, ok = 0, warn = 0, fail = 0, unknown = 0;
+        for (const g of checklistData.groups) {
+            for (const c of g.checks) {
+                total++;
+                const val = answers[c.id] || 'UNKNOWN';
+                if (val === 'YES') ok++;
+                else if (val === 'NO') fail++;
+                else if (val === 'PARTIAL') warn++;
+                else unknown++;
+            }
+        }
+
+        document.getElementById('statOk').textContent = ok;
+        document.getElementById('statWarn').textContent = warn;
+        document.getElementById('statFail').textContent = fail;
+        document.getElementById('statUnknown').textContent = unknown;
+
+        const answered = ok + warn + fail;
+        const pct = total > 0 ? Math.round((answered / total) * 100) : 0;
+        document.getElementById('progressPercent').textContent = `${pct}%`;
+        document.getElementById('progressFill').style.width = `${pct}%`;
+
+        // Обновляем бейджи групп
+        for (const g of checklistData.groups) {
+            const groupEl = document.querySelector(`.group[data-group="${g.id}"]`);
+            if (!groupEl) continue;
+            const checks = g.checks;
+            const answeredInGroup = checks.filter(c => answers[c.id] && answers[c.id] !== 'UNKNOWN').length;
+            const pctGroup = checks.length > 0 ? Math.round((answeredInGroup / checks.length) * 100) : 0;
+            const badge = groupEl.querySelector('.badge');
+            if (badge) {
+                badge.textContent = `${answeredInGroup}/${checks.length} (${pctGroup}%)`;
+            }
+        }
+    }
+
+    function updateGroupProgress() {
+        // Просто пересчитываем всё
+        updateProgress();
+    }
+
+    // ============================================================
+    // 7. STATE
+    // ============================================================
+    function saveState() {
+        localStorage.setItem('checklist_answers_6.1', JSON.stringify(answers));
+    }
+
+    // ============================================================
+    // 8. EXPORT
+    // ============================================================
+    function exportResults() {
+        const result = {
+            article: checklistData.article,
+            title: checklistData.title,
+            law: checklistData.law,
+            exported_at: new Date().toISOString(),
+            answers: answers,
+            summary: {}
+        };
+
+        let total = 0, ok = 0, warn = 0, fail = 0, unknown = 0;
+        for (const g of checklistData.groups) {
+            for (const c of g.checks) {
+                total++;
+                const val = answers[c.id] || 'UNKNOWN';
+                if (val === 'YES') ok++;
+                else if (val === 'NO') fail++;
+                else if (val === 'PARTIAL') warn++;
+                else unknown++;
+            }
+        }
+        result.summary = { total, ok, warn, fail, unknown };
+
+        const json = JSON.stringify(result, null, 2);
+        const area = document.getElementById('exportArea');
+        area.textContent = json;
+        area.classList.toggle('show');
+
+        // Копировать в буфер
+        navigator.clipboard?.writeText(json).then(() => {
+            // показываем уведомление
+        }).catch(() => {});
+    }
+
+    // ============================================================
+    // 9. RESET
+    // ============================================================
+    function resetAll() {
+        if (!confirm('Сбросить все ответы?')) return;
+        answers = {};
+        saveState();
+        renderGroups();
+        updateProgress();
+        document.getElementById('exportArea').classList.remove('show');
+    }
+
+    // ============================================================
+    // 10. BOOT
+    // ============================================================
+    loadChecklist();
+</script>
+
+</body>
+</html>
