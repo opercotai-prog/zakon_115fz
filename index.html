@@ -5,23 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Чек-лист по статье 6.1 115-ФЗ</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* ===== БАЗОВЫЕ СТИЛИ ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background: #f6f8fa;
             color: #1a1a2e;
             padding: 24px;
         }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1100px; margin: 0 auto; }
 
         /* ===== HEADER ===== */
         .header {
@@ -32,18 +24,8 @@
             margin-bottom: 28px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
-
-        .header h1 {
-            font-size: 26px;
-            font-weight: 700;
-        }
-
-        .header .subtitle {
-            font-size: 16px;
-            opacity: 0.85;
-            margin-top: 6px;
-        }
-
+        .header h1 { font-size: 26px; font-weight: 700; }
+        .header .subtitle { font-size: 16px; opacity: 0.85; margin-top: 6px; }
         .header .meta {
             margin-top: 12px;
             display: flex;
@@ -52,14 +34,118 @@
             font-size: 14px;
             opacity: 0.9;
         }
-
         .header .meta span {
             background: rgba(255,255,255,0.12);
             padding: 4px 14px;
             border-radius: 20px;
         }
 
-        /* ===== PROGRESS ===== */
+        /* ===== ПАНЕЛЬ ЗАГРУЗКИ ===== */
+        .upload-panel {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #e9edf2;
+        }
+        .upload-panel h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #0f3460;
+        }
+        .upload-panel .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .upload-panel .row label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #334155;
+            min-width: 120px;
+        }
+        .upload-panel input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .upload-panel input[type="text"]:focus {
+            border-color: #0f3460;
+            outline: none;
+        }
+        .file-drop-zone {
+            border: 2px dashed #cbd5e1;
+            padding: 20px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafbfc;
+            flex: 1;
+        }
+        .file-drop-zone:hover {
+            border-color: #0f3460;
+            background: #f1f5f9;
+        }
+        .file-drop-zone.dragover {
+            border-color: #0f3460;
+            background: #e2e8f0;
+        }
+        .file-drop-zone .file-name {
+            margin-top: 6px;
+            font-size: 14px;
+            color: #475569;
+        }
+        .upload-panel .btn-check {
+            background: #0f3460;
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .upload-panel .btn-check:hover { background: #1a4a7a; }
+        .upload-panel .btn-check:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+        .upload-panel .status-msg {
+            margin-top: 12px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+        .upload-panel .status-msg.show { display: block; }
+        .upload-panel .status-msg.success { background: #dcfce7; color: #166534; border-left: 4px solid #22c55e; }
+        .upload-panel .status-msg.error { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
+        .upload-panel .status-msg.info { background: #dbeafe; color: #1e40af; border-left: 4px solid #3b82f6; }
+
+        .spinner-small {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #0f3460;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== ПРОГРЕСС ===== */
         .progress-bar-wrap {
             background: white;
             border-radius: 12px;
@@ -72,20 +158,17 @@
             justify-content: space-between;
             gap: 12px;
         }
-
         .progress-bar-wrap .stats {
             display: flex;
             gap: 24px;
             flex-wrap: wrap;
             font-size: 14px;
         }
-
         .progress-bar-wrap .stats .stat-item {
             display: flex;
             align-items: center;
             gap: 6px;
         }
-
         .stat-dot {
             display: inline-block;
             width: 12px;
@@ -105,7 +188,6 @@
             border-radius: 4px;
             overflow: hidden;
         }
-
         .progress-track .fill {
             height: 100%;
             background: linear-gradient(90deg, #22c55e, #16a34a);
@@ -114,7 +196,7 @@
             width: 0%;
         }
 
-        /* ===== GROUP ===== */
+        /* ===== ГРУППЫ ===== */
         .group {
             background: white;
             border-radius: 14px;
@@ -123,7 +205,6 @@
             overflow: hidden;
             border: 1px solid #e9edf2;
         }
-
         .group-header {
             padding: 18px 24px;
             background: #fafbfc;
@@ -135,17 +216,12 @@
             align-items: center;
             transition: background 0.15s;
         }
-
-        .group-header:hover {
-            background: #f1f4f8;
-        }
-
+        .group-header:hover { background: #f1f4f8; }
         .group-header .group-title {
             font-size: 18px;
             font-weight: 600;
             color: #0f3460;
         }
-
         .group-header .group-meta {
             font-size: 14px;
             color: #64748b;
@@ -153,7 +229,6 @@
             align-items: center;
             gap: 16px;
         }
-
         .group-header .group-meta .badge {
             background: #e2e8f0;
             padding: 2px 12px;
@@ -161,23 +236,15 @@
             font-size: 13px;
             color: #334155;
         }
+        .group-body { padding: 8px 24px 24px; }
+        .group-body.collapsed { display: none; }
 
-        .group-body {
-            padding: 8px 24px 24px;
-        }
-
-        .group-body.collapsed {
-            display: none;
-        }
-
-        /* ===== CHECK ===== */
+        /* ===== ВОПРОСЫ ===== */
         .check-item {
             padding: 16px 0;
             border-bottom: 1px solid #f1f4f8;
         }
-        .check-item:last-child {
-            border-bottom: none;
-        }
+        .check-item:last-child { border-bottom: none; }
 
         .check-question {
             display: flex;
@@ -188,16 +255,13 @@
             color: #1a1a2e;
             margin-bottom: 8px;
         }
-
         .check-question .id {
             font-weight: 600;
             color: #64748b;
             font-size: 13px;
             white-space: nowrap;
             min-width: 70px;
-            padding-top: 1px;
         }
-
         .check-norm {
             font-size: 13px;
             color: #64748b;
@@ -208,7 +272,6 @@
             border-left: 3px solid #94a3b8;
             line-height: 1.5;
         }
-
         .check-actions {
             display: flex;
             flex-wrap: wrap;
@@ -216,13 +279,11 @@
             gap: 8px 14px;
             margin-left: 82px;
         }
-
         .btn-group {
             display: flex;
             gap: 6px;
             flex-wrap: wrap;
         }
-
         .btn-group button {
             padding: 5px 16px;
             border: 2px solid #e2e8f0;
@@ -234,30 +295,25 @@
             transition: all 0.15s;
             color: #334155;
         }
-
         .btn-group button:hover {
             border-color: #94a3b8;
             background: #f8fafc;
         }
-
         .btn-group button.active-yes {
             border-color: #22c55e;
             background: #dcfce7;
             color: #166534;
         }
-
         .btn-group button.active-no {
             border-color: #ef4444;
             background: #fee2e2;
             color: #991b1b;
         }
-
         .btn-group button.active-partial {
             border-color: #eab308;
             background: #fef9c3;
             color: #854d0e;
         }
-
         .btn-group button.active-unknown {
             border-color: #94a3b8;
             background: #f1f5f9;
@@ -275,30 +331,23 @@
             color: #78350f;
             display: none;
         }
-
-        .recommendation.show {
-            display: block;
-        }
-
+        .recommendation.show { display: block; }
         .recommendation.warn {
             background: #fee2e2;
             border-left-color: #ef4444;
             color: #991b1b;
         }
-
         .recommendation.info {
             background: #dbeafe;
             border-left-color: #3b82f6;
             color: #1e40af;
         }
-
         .recommendation.success {
             background: #dcfce7;
             border-left-color: #22c55e;
             color: #166534;
         }
 
-        /* ===== STATUS BADGE ===== */
         .status-badge {
             display: inline-block;
             font-size: 12px;
@@ -319,7 +368,6 @@
             gap: 12px;
             margin: 20px 0 28px;
         }
-
         .toolbar button {
             padding: 10px 24px;
             border: none;
@@ -332,32 +380,22 @@
             border: 1px solid #e2e8f0;
             color: #1a1a2e;
         }
-
         .toolbar button:hover {
             background: #f1f4f8;
             border-color: #94a3b8;
         }
-
         .toolbar button.primary {
             background: #0f3460;
             color: white;
             border-color: #0f3460;
         }
-
-        .toolbar button.primary:hover {
-            background: #1a4a7a;
-        }
-
+        .toolbar button.primary:hover { background: #1a4a7a; }
         .toolbar button.danger {
             color: #ef4444;
             border-color: #fca5a5;
         }
+        .toolbar button.danger:hover { background: #fee2e2; }
 
-        .toolbar button.danger:hover {
-            background: #fee2e2;
-        }
-
-        /* ===== EXPORT ===== */
         .export-area {
             background: #1e293b;
             color: #e2e8f0;
@@ -372,54 +410,31 @@
             display: none;
             margin-top: 12px;
         }
-
-        .export-area.show {
-            display: block;
-        }
+        .export-area.show { display: block; }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 700px) {
-            body {
-                padding: 12px;
-            }
-            .header {
-                padding: 20px;
-            }
-            .header h1 {
-                font-size: 20px;
-            }
-            .check-question {
-                flex-wrap: wrap;
-            }
-            .check-question .id {
-                min-width: auto;
-            }
+            body { padding: 12px; }
+            .header { padding: 20px; }
+            .header h1 { font-size: 20px; }
+            .check-question { flex-wrap: wrap; }
+            .check-question .id { min-width: auto; }
             .check-norm,
             .check-actions,
-            .recommendation {
-                margin-left: 0;
-            }
-            .check-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .btn-group {
-                flex-wrap: wrap;
-            }
-            .progress-bar-wrap {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .group-body {
-                padding: 8px 16px 16px;
-            }
+            .recommendation { margin-left: 0; }
+            .check-actions { flex-direction: column; align-items: stretch; }
+            .btn-group { flex-wrap: wrap; }
+            .progress-bar-wrap { flex-direction: column; align-items: stretch; }
+            .group-body { padding: 8px 16px 16px; }
+            .upload-panel .row { flex-direction: column; align-items: stretch; }
+            .upload-panel .row label { min-width: auto; }
         }
     </style>
 </head>
 <body>
 
 <div class="container" id="app">
-    <!-- Header -->
+    <!-- ===== HEADER ===== -->
     <div class="header">
         <h1>📋 Чек-лист по статье 6.1 115-ФЗ</h1>
         <div class="subtitle">Обязанности юридического лица по раскрытию информации о своих бенефициарных владельцах</div>
@@ -430,7 +445,26 @@
         </div>
     </div>
 
-    <!-- Progress -->
+    <!-- ===== ПАНЕЛЬ ЗАГРУЗКИ ДОКУМЕНТА ===== -->
+    <div class="upload-panel">
+        <h3>📎 Проверка документа по чек-листу</h3>
+        <div class="row">
+            <label for="apiKey">🔑 API-ключ OpenRouter</label>
+            <input type="text" id="apiKey" placeholder="sk-or-v1-... (получить на openrouter.ai/keys)" />
+        </div>
+        <div class="row" style="margin-top:12px;">
+            <label>📂 Документ</label>
+            <div class="file-drop-zone" id="dropZone">
+                <div>📂 Перетащите файл сюда или кликните для выбора</div>
+                <input type="file" id="fileInput" accept=".docx,.pdf" style="display:none;" />
+                <div class="file-name" id="fileName">Файл не выбран</div>
+            </div>
+            <button class="btn-check" id="checkBtn" disabled>🔍 Проверить</button>
+        </div>
+        <div class="status-msg" id="statusMsg"></div>
+    </div>
+
+    <!-- ===== PROGRESS ===== -->
     <div class="progress-bar-wrap" id="progressWrap">
         <div class="stats">
             <span class="stat-item"><span class="stat-dot ok"></span> OK: <strong id="statOk">0</strong></span>
@@ -444,17 +478,16 @@
         </div>
     </div>
 
-    <!-- Toolbar -->
+    <!-- ===== TOOLBAR ===== -->
     <div class="toolbar">
         <button class="primary" onclick="exportResults()">📤 Экспорт результатов (JSON)</button>
         <button onclick="resetAll()" class="danger">🔄 Сбросить все ответы</button>
         <button onclick="toggleAllGroups()">📂 Свернуть / Развернуть все</button>
     </div>
 
-    <!-- Export area -->
     <div class="export-area" id="exportArea"></div>
 
-    <!-- Groups -->
+    <!-- ===== GROUPS ===== -->
     <div id="groupsContainer"></div>
 </div>
 
@@ -464,14 +497,14 @@
     // ============================================================
     let checklistData = null;
     let answers = {};
+    let selectedFile = null;
 
     // ============================================================
     // 2. LOAD JSON
     // ============================================================
     async function loadChecklist() {
         try {
-            // Если файл лежит рядом — замени путь на свой
-            const resp = await fetch('article_6.1_checklist_v1.0.json');
+            const resp = await fetch('research/115fz/checklists/article_6.1_checklist_v1.0.json');
             if (!resp.ok) throw new Error('Не удалось загрузить JSON');
             checklistData = await resp.json();
             initFromData();
@@ -479,7 +512,7 @@
             document.getElementById('groupsContainer').innerHTML = `
                 <div style="background:#fee2e2;padding:20px;border-radius:10px;color:#991b1b;">
                     ❌ Ошибка загрузки: ${e.message}<br>
-                    Убедитесь, что файл <code>article_6.1_checklist_v1.0.json</code> лежит рядом с этой страницей.
+                    Убедитесь, что файл <code>research/115fz/checklists/article_6.1_checklist_v1.0.json</code> существует.
                 </div>
             `;
             console.error(e);
@@ -490,21 +523,16 @@
     // 3. INIT
     // ============================================================
     function initFromData() {
-        // Считаем общее количество вопросов
         let total = 0;
         for (const g of checklistData.groups) {
             total += g.checks.length;
         }
         document.getElementById('totalQuestions').textContent = `📊 Всего вопросов: ${total}`;
 
-        // Загружаем сохранённые ответы из localStorage
         const saved = localStorage.getItem('checklist_answers_6.1');
         if (saved) {
-            try {
-                answers = JSON.parse(saved);
-            } catch (e) {}
+            try { answers = JSON.parse(saved); } catch (e) {}
         }
-
         renderGroups();
         updateProgress();
     }
@@ -537,8 +565,6 @@
 
             for (const check of allChecks) {
                 const val = answers[check.id] || 'UNKNOWN';
-                const hasRecommendation = check.recommendation_if_no || check.recommendation_if_partial;
-
                 let recText = '';
                 let recClass = 'info';
                 if (val === 'NO' && check.recommendation_if_no) {
@@ -552,19 +578,8 @@
                     recClass = 'success';
                 }
 
-                const statusLabel = {
-                    'YES': 'OK',
-                    'NO': 'FAIL',
-                    'PARTIAL': 'WARN',
-                    'UNKNOWN': 'Н/Д'
-                }[val] || 'Н/Д';
-
-                const statusClass = {
-                    'YES': 'ok',
-                    'NO': 'fail',
-                    'PARTIAL': 'warn',
-                    'UNKNOWN': 'unknown'
-                }[val] || 'unknown';
+                const statusLabel = { 'YES':'OK', 'NO':'FAIL', 'PARTIAL':'WARN', 'UNKNOWN':'Н/Д' }[val] || 'Н/Д';
+                const statusClass = { 'YES':'ok', 'NO':'fail', 'PARTIAL':'warn', 'UNKNOWN':'unknown' }[val] || 'unknown';
 
                 html += `
                     <div class="check-item" data-id="${check.id}">
@@ -587,20 +602,15 @@
                                 <button data-id="${check.id}" data-val="PARTIAL" class="${val === 'PARTIAL' ? 'active-partial' : ''}" onclick="setAnswer('${check.id}','PARTIAL')">⚠️ Частично</button>
                                 <button data-id="${check.id}" data-val="UNKNOWN" class="${val === 'UNKNOWN' ? 'active-unknown' : ''}" onclick="setAnswer('${check.id}','UNKNOWN')">❓ Н/Д</button>
                             </div>
-                            ${hasRecommendation ? `
-                                <div class="recommendation ${recText ? 'show' : ''} ${recClass}" id="rec_${check.id}">
-                                    ${recText || 'Выберите ответ для рекомендации.'}
-                                </div>
-                            ` : ''}
+                            <div class="recommendation ${recText ? 'show' : ''} ${recClass}" id="rec_${check.id}">
+                                ${recText || 'Выберите ответ для рекомендации.'}
+                            </div>
                         </div>
                     </div>
                 `;
             }
 
-            html += `
-                    </div>
-                </div>
-            `;
+            html += `</div></div>`;
         }
 
         container.innerHTML = html;
@@ -612,7 +622,6 @@
     function setAnswer(id, val) {
         answers[id] = val;
         saveState();
-        // Перерисовываем только этот чек-пункт (быстрее)
         renderSingleCheck(id);
         updateProgress();
     }
@@ -622,7 +631,6 @@
         if (!item) return;
         const val = answers[id] || 'UNKNOWN';
 
-        // Обновляем кнопки
         const btns = item.querySelectorAll('.btn-group button');
         btns.forEach(b => {
             const bVal = b.getAttribute('data-val');
@@ -635,7 +643,6 @@
             }
         });
 
-        // Обновляем статус-бейдж
         const badge = item.querySelector('.status-badge');
         if (badge) {
             const labels = { 'YES':'OK','NO':'FAIL','PARTIAL':'WARN','UNKNOWN':'Н/Д' };
@@ -644,18 +651,15 @@
             badge.className = `status-badge ${classes[val] || 'unknown'}`;
         }
 
-        // Обновляем рекомендацию
         const rec = document.getElementById(`rec_${id}`);
         if (rec) {
-            // Находим check из данных
             let check = null;
             for (const g of checklistData.groups) {
                 const found = g.checks.find(c => c.id === id);
                 if (found) { check = found; break; }
             }
             if (check) {
-                let text = '';
-                let cls = 'info';
+                let text = '', cls = 'info';
                 if (val === 'NO' && check.recommendation_if_no) {
                     text = check.recommendation_if_no;
                     cls = 'warn';
@@ -670,16 +674,12 @@
                 rec.className = `recommendation ${text ? 'show' : ''} ${cls}`;
             }
         }
-
-        // Обновляем прогресс группы
         updateGroupProgress();
     }
 
     function toggleGroup(id) {
         const body = document.getElementById(`groupBody_${id}`);
-        if (body) {
-            body.classList.toggle('collapsed');
-        }
+        if (body) body.classList.toggle('collapsed');
     }
 
     function toggleAllGroups() {
@@ -706,7 +706,6 @@
                 else unknown++;
             }
         }
-
         document.getElementById('statOk').textContent = ok;
         document.getElementById('statWarn').textContent = warn;
         document.getElementById('statFail').textContent = fail;
@@ -717,7 +716,6 @@
         document.getElementById('progressPercent').textContent = `${pct}%`;
         document.getElementById('progressFill').style.width = `${pct}%`;
 
-        // Обновляем бейджи групп
         for (const g of checklistData.groups) {
             const groupEl = document.querySelector(`.group[data-group="${g.id}"]`);
             if (!groupEl) continue;
@@ -725,16 +723,11 @@
             const answeredInGroup = checks.filter(c => answers[c.id] && answers[c.id] !== 'UNKNOWN').length;
             const pctGroup = checks.length > 0 ? Math.round((answeredInGroup / checks.length) * 100) : 0;
             const badge = groupEl.querySelector('.badge');
-            if (badge) {
-                badge.textContent = `${answeredInGroup}/${checks.length} (${pctGroup}%)`;
-            }
+            if (badge) badge.textContent = `${answeredInGroup}/${checks.length} (${pctGroup}%)`;
         }
     }
 
-    function updateGroupProgress() {
-        // Просто пересчитываем всё
-        updateProgress();
-    }
+    function updateGroupProgress() { updateProgress(); }
 
     // ============================================================
     // 7. STATE
@@ -744,7 +737,7 @@
     }
 
     // ============================================================
-    // 8. EXPORT
+    // 8. EXPORT / RESET
     // ============================================================
     function exportResults() {
         const result = {
@@ -755,7 +748,6 @@
             answers: answers,
             summary: {}
         };
-
         let total = 0, ok = 0, warn = 0, fail = 0, unknown = 0;
         for (const g of checklistData.groups) {
             for (const c of g.checks) {
@@ -768,21 +760,13 @@
             }
         }
         result.summary = { total, ok, warn, fail, unknown };
-
         const json = JSON.stringify(result, null, 2);
         const area = document.getElementById('exportArea');
         area.textContent = json;
         area.classList.toggle('show');
-
-        // Копировать в буфер
-        navigator.clipboard?.writeText(json).then(() => {
-            // показываем уведомление
-        }).catch(() => {});
+        navigator.clipboard?.writeText(json).catch(() => {});
     }
 
-    // ============================================================
-    // 9. RESET
-    // ============================================================
     function resetAll() {
         if (!confirm('Сбросить все ответы?')) return;
         answers = {};
@@ -793,10 +777,128 @@
     }
 
     // ============================================================
-    // 10. BOOT
+    // 9. FILE UPLOAD & CHECK
+    // ============================================================
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileName = document.getElementById('fileName');
+    const checkBtn = document.getElementById('checkBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const apiKeyInput = document.getElementById('apiKey');
+
+    // Клик по зоне → открыть выбор файла
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // Drag & Drop
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            handleFileSelect();
+        }
+    });
+    fileInput.addEventListener('change', handleFileSelect);
+
+    function handleFileSelect() {
+        if (fileInput.files.length) {
+            selectedFile = fileInput.files[0];
+            fileName.textContent = `📄 ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(1)} KB)`;
+            checkBtn.disabled = false;
+            showStatus('info', '✅ Файл загружен. Нажмите "Проверить" для анализа.');
+        } else {
+            selectedFile = null;
+            fileName.textContent = 'Файл не выбран';
+            checkBtn.disabled = true;
+        }
+    }
+
+    function showStatus(type, msg) {
+        statusMsg.className = `status-msg show ${type}`;
+        statusMsg.textContent = msg;
+    }
+
+    function hideStatus() {
+        statusMsg.className = 'status-msg';
+    }
+
+        // ============================================================
+    // 10. ПРОВЕРКА ДОКУМЕНТА ЧЕРЕЗ API
+    // ============================================================
+    checkBtn.addEventListener('click', async () => {
+        const apiKey = apiKeyInput.value.trim();
+        if (!apiKey) {
+            showStatus('error', '❌ Введите API-ключ OpenRouter (получить на openrouter.ai/keys)');
+            return;
+        }
+        if (!selectedFile) {
+            showStatus('error', '❌ Выберите файл для проверки');
+            return;
+        }
+
+        // Для демо используем UPD_002 (обновление не реже 1 раза в год)
+        const checkId = 'UPD_002';
+        const checkQuestion = 'Обновляете ли вы информацию не реже 1 раза в год?';
+
+        checkBtn.disabled = true;
+        checkBtn.textContent = '⏳ Анализируем...';
+        showStatus('info', '⏳ Отправляем документ на анализ (до 30 секунд)...');
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('check_id', checkId);
+        formData.append('check_question', checkQuestion);
+        formData.append('api_key', apiKey);
+
+        try {
+            const response = await fetch('http://10.0.11.53:5000/api/check_document', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Ошибка сервера');
+            }
+
+            // Успешный ответ — показываем результат
+            let statusType = 'success';
+            let statusIcon = '✅';
+            if (data.answer === 'NO') {
+                statusType = 'error';
+                statusIcon = '❌';
+            } else if (data.answer === 'PARTIAL') {
+                statusType = 'warn';
+                statusIcon = '⚠️';
+            }
+
+            showStatus(statusType, `${statusIcon} Результат: ${data.answer_display}\n📌 ${data.evidence}`);
+
+            // Автоматически заполняем ответ в чек-листе
+            if (data.answer === 'YES' || data.answer === 'NO' || data.answer === 'PARTIAL') {
+                setAnswer(checkId, data.answer);
+            }
+
+        } catch (error) {
+            showStatus('error', '❌ Ошибка: ' + error.message);
+        } finally {
+            checkBtn.disabled = false;
+            checkBtn.textContent = '🔍 Проверить';
+        }
+    });
+
+    // ============================================================
+    // 11. ЗАГРУЗКА ПРИ СТАРТЕ
     // ============================================================
     loadChecklist();
 </script>
-
 </body>
 </html>
