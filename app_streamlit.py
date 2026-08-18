@@ -433,7 +433,7 @@ with col_right:
             del st.session_state['last_result']
             st.rerun()
     
-       # Автоматическое заполнение чек-листа при получении результата
+    # Автоматическое заполнение чек-листа при получении результата
     if 'last_result' in st.session_state:
         result = st.session_state['last_result']
         answer_map = {"ДА": "YES", "НЕТ": "NO", "ЧАСТИЧНО": "PARTIAL"}
