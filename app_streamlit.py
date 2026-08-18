@@ -1,4 +1,3 @@
-cat > app_streamlit.py <<'EOF'
 import streamlit as st
 import os
 import json
@@ -369,4 +368,3 @@ if st.button("🔄 Сбросить все ответы", type="secondary"):
     st.rerun()
 
 st.caption("💡 Данные сохраняются в сессии. При обновлении страницы они сбросятся.")
-EOF
