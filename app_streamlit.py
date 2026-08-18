@@ -53,9 +53,9 @@ def extract_text(file_bytes, file_type):
         return "Неподдерживаемый формат"
 
 # ============================================================
-# 2. АНАЛИЗ ЧЕРЕЗ OPENROUTER
+# 2. АНАЛИЗ ЧЕРЕЗ OPENROUTER (УЛУЧШЕННАЯ ВЕРСИЯ)
 # ============================================================
-def analyze_document_with_openrouter(text, check_id, check_question, api_key):
+def analyze_document_with_openrouter(text, check_id, check_question, api_key, norm_text=None, evidence=None):
     """Отправляет текст в OpenRouter для проверки пункта чек-листа"""
     
     if not api_key or api_key == "sk-or-v1-...":
@@ -65,6 +65,13 @@ def analyze_document_with_openrouter(text, check_id, check_question, api_key):
             "confidence": 0.0
         }
 
+    # Формируем контекст нормы
+    norm_context = ""
+    if norm_text:
+        norm_context += f"\n📌 Текст нормы:\n{norm_text}\n"
+    if evidence:
+        norm_context += f"\n🔑 Ключевая фраза из нормы:\n{evidence}\n"
+
     url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -72,27 +79,38 @@ def analyze_document_with_openrouter(text, check_id, check_question, api_key):
     }
 
     prompt = f"""
-Ты — эксперт по комплаенсу. Проверь, соответствует ли загруженный документ требованию из чек-листа.
+Ты — эксперт по комплаенсу и AML (противодействие легализации доходов). 
+Твоя задача — проверить, соответствует ли загруженный документ требованию из чек-листа.
 
-Требование:
+=== ТРЕБОВАНИЕ ===
 ID: {check_id}
 Вопрос: {check_question}
+{norm_context}
 
-Инструкция:
-1. Проанализируй текст документа.
-2. Ответь на вопрос: выполняется ли это требование?
-3. Дай один из ответов: "YES", "NO" или "PARTIAL".
-4. Если ответ "YES" — приведи цитату из документа, которая это подтверждает.
-5. Если ответ "NO" — объясни, что именно отсутствует.
-6. Если ответ "PARTIAL" — объясни, что есть, а чего не хватает.
-
-Текст документа:
+=== ДОКУМЕНТ ПОЛЬЗОВАТЕЛЯ ===
 {text[:8000]}
 
-Верни ТОЛЬКО JSON в формате:
+=== ИНСТРУКЦИЯ ===
+1. Внимательно прочитай документ пользователя.
+2. Найди в нём информацию, которая подтверждает или опровергает выполнение требования.
+3. Ответь одним из вариантов:
+   - "YES" — если в документе ЕСТЬ прямое подтверждение выполнения требования (цитата)
+   - "NO" — если в документе НЕТ подтверждения выполнения требования
+   - "PARTIAL" — если есть частичное выполнение (не все условия соблюдены)
+
+4. ОБЯЗАТЕЛЬНО приведи ЦИТАТУ из документа пользователя:
+   - Если "YES" — скопируй фрагмент, который подтверждает выполнение
+   - Если "NO" — укажи, что именно отсутствует (на основе текста документа)
+   - Если "PARTIAL" — покажи, что есть, а чего не хватает
+
+5. НЕ ПРИДУМЫВАЙ то, чего нет в документе.
+6. Если информация в документе неполная или неясная — ставь "PARTIAL".
+
+=== ФОРМАТ ОТВЕТА ===
+Верни ТОЛЬКО JSON без лишнего текста:
 {{
     "answer": "YES|NO|PARTIAL",
-    "evidence": "цитата из документа или пояснение",
+    "evidence": "цитата из документа ИЛИ пояснение, почему нет/частично",
     "confidence": 0.0-1.0
 }}
 """
@@ -100,7 +118,7 @@ ID: {check_id}
     payload = {
         "model": "deepseek/deepseek-chat-v3-0324",
         "messages": [
-            {"role": "system", "content": "Ты помощник, который отвечает только в формате JSON."},
+            {"role": "system", "content": "Ты — строгий эксперт. Отвечаешь ТОЛЬКО в формате JSON. Никаких пояснений вне JSON."},
             {"role": "user", "content": prompt}
         ],
         "temperature": 0.1,
@@ -112,7 +130,7 @@ ID: {check_id}
         if response.status_code != 200:
             return {
                 "answer": "NO",
-                "evidence": f"Ошибка OpenRouter: {response.status_code}",
+                "evidence": f"❌ Ошибка OpenRouter: {response.status_code}",
                 "confidence": 0.0
             }
 
@@ -129,7 +147,7 @@ ID: {check_id}
     except Exception as e:
         return {
             "answer": "NO",
-            "evidence": f"Ошибка: {str(e)}",
+            "evidence": f"❌ Ошибка: {str(e)}",
             "confidence": 0.0
         }
 
@@ -148,7 +166,20 @@ def load_checklist():
         return None
 
 # ============================================================
-# 4. ОСНОВНОЙ ИНТЕРФЕЙС
+# 4. ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ — ПОИСК ПУНКТА В JSON
+# ============================================================
+def find_check_in_json(checklist_data, check_id):
+    """Ищет пункт чек-листа по ID в загруженном JSON"""
+    if not checklist_data:
+        return None, None
+    for group in checklist_data.get('groups', []):
+        for check in group.get('checks', []):
+            if check.get('id') == check_id:
+                return check.get('norm_text', ''), check.get('evidence', '')
+    return None, None
+
+# ============================================================
+# 5. ОСНОВНОЙ ИНТЕРФЕЙС
 # ============================================================
 st.set_page_config(
     page_title="Чек-лист по ст.6.1 115-ФЗ",
@@ -169,7 +200,7 @@ if 'answers' not in st.session_state:
     st.session_state.answers = {}
 
 # ============================================================
-# 4.1 ПАНЕЛЬ ЗАГРУЗКИ
+# 5.1 ПАНЕЛЬ ЗАГРУЗКИ
 # ============================================================
 with st.expander("📎 Загрузить документ для проверки", expanded=True):
     col1, col2 = st.columns([2, 1])
@@ -223,12 +254,17 @@ with st.expander("📎 Загрузить документ для проверк
                     if len(text.strip()) < 50:
                         st.error("❌ Извлечено мало текста. Возможно, файл содержит только изображения или таблицы.")
                     else:
-                        # Отправляем в OpenRouter
+                        # Ищем в JSON текст нормы и evidence для выбранного пункта
+                        norm_text, evidence = find_check_in_json(checklist_data, selected_check)
+                        
+                        # Отправляем в OpenRouter с контекстом нормы
                         result = analyze_document_with_openrouter(
                             text, 
                             selected_check, 
                             check_options[selected_check],
-                            api_key_input
+                            api_key_input,
+                            norm_text,
+                            evidence
                         )
                         
                         # Сохраняем результат
@@ -249,7 +285,7 @@ with st.expander("📎 Загрузить документ для проверк
             st.info("📂 Загрузите файл для проверки")
 
 # ============================================================
-# 4.2 ОТОБРАЖЕНИЕ РЕЗУЛЬТАТА
+# 5.2 ОТОБРАЖЕНИЕ РЕЗУЛЬТАТА
 # ============================================================
 if 'last_result' in st.session_state:
     result = st.session_state['last_result']
@@ -281,7 +317,7 @@ if 'last_result' in st.session_state:
             st.rerun()
 
 # ============================================================
-# 4.3 ЧЕК-ЛИСТ
+# 5.3 ЧЕК-ЛИСТ
 # ============================================================
 st.markdown("---")
 st.subheader("📋 Чек-лист по статье 6.1")
@@ -337,7 +373,7 @@ for group in checklist_data['groups']:
                 st.success("✅ Всё в порядке.")
 
 # ============================================================
-# 4.4 ЭКСПОРТ
+# 5.4 ЭКСПОРТ
 # ============================================================
 with st.expander("📤 Экспорт результатов"):
     if st.button("📤 Экспортировать JSON"):
@@ -359,7 +395,7 @@ with st.expander("📤 Экспорт результатов"):
         )
 
 # ============================================================
-# 4.5 СБРОС
+# 5.5 СБРОС
 # ============================================================
 if st.button("🔄 Сбросить все ответы", type="secondary"):
     st.session_state.answers = {}
